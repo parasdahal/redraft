@@ -70,6 +70,12 @@ class TextAnalyzer:
                 if token.similarity(word) > 0.75 and token.similarity(word) <0.99:
                     replace.append((token.i,token,word,token.similarity(word)))
         return replace
+    
+    def long_sent(self):
+        """
+        """
+        self.logger.info("Finding long sentences")
+        return [sent for sent in self.doc.sents if len(sent) > 30]
 
     def passive_sents(self):
         """
@@ -97,12 +103,14 @@ class TextAnalyzer:
         self.logger.info("Identifying modal verbs")
         return [(token.i,token) for token in self.doc if token.tag_ == "MD"]
 
+    
+
 
 if __name__ == "__main__":
     a = TextAnalyzer()
     file = io.open('text.txt','r',encoding='utf8').read()
     a.parse(file)
-    print(a.noun_cluster())
+    print(a.long_sent())
     # print(a.adverb_tokens())
     # print(a.modal_tokens())
     # print(a.passive_sents())
