@@ -1,6 +1,7 @@
 import spacy
 import io
 import logging
+import os
 
 class TextAnalyzer:
     """
@@ -14,6 +15,9 @@ class TextAnalyzer:
         logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         self.logger = logging.getLogger("TextAnalyzer")
 
+        self.logger.info("Loading corpora")
+        self.corpora =self.load_corpora(path="corpus")
+        
         self.logger.info("Loading Spacy")
         self.nlp = spacy.load('en')
         self.logger.info("Spacy loaded")
@@ -25,7 +29,7 @@ class TextAnalyzer:
         self.logger.info("Parsing text")
         self.doc = self.nlp(text)
         
-    def load_corpus(self, path):
+    def corpus_to_list(self, path):
         """
         Loads the corpus and returns a list of words on the corpus
         """
@@ -33,23 +37,33 @@ class TextAnalyzer:
         with io.open(path,'r',encoding='utf8') as corp:
         	words = [word.rstrip('\n').lower() for word in corp]
         return words
+    
+    def load_corpora(self,path="corpus"):
+        """
+        Loads the corpuses in corpus directory and returns a corpora dictionary
+        """
+        corpora = dict()
+        for root,dir,files in os.walk(path):
+            for name in files:
+                corpora[name] = self.corpus_to_list(os.path.join(root,name))
+        return corpora
 
-    def match_corpus(self,path):
+    def match_corpus(self,corpus):
         """
-        Calls load_corpus method to get words from corpus and returns list of (index,token) match with tokens in self.doc 
+        Calls corpus_to_list method to get words from corpus and returns list of (index,token) match with tokens in self.doc 
         """
-        words = self.load_corpus(path)
-        self.logger.info("Matching document with corpus %s",path)
+        words = self.corpora[corpus]
+        self.logger.info("Matching document with corpus %s",corpus)
         match = [(token.i,token) for token in self.doc if token.text in words]
         return match
     
-    def replacable_from_corpus(self,path):
+    def replacable_from_corpus(self,corpus):
         """
         Find tokens in document that can be replaced by corpus words 
         """
         replace = list()
-        words = self.load_corpus(path)
-        self.logger.info("Finding replacable tokens from corpus %s",path)
+        words = self.corpora[corpus]
+        self.logger.info("Finding replacable tokens from corpus %s",corpus)
         word_tokens = [self.nlp(word) for word in words]
         for token in self.doc:
             for word in word_tokens:
@@ -57,14 +71,29 @@ class TextAnalyzer:
                     replace.append((token.i,token,word,token.similarity(word)))
         return replace
 
+    def passive_sents(self):
+        """
+        Find passive sentences in document and return a list of those sentences
+        """
+        passive = list()
+        sentences = [sents for sents in self.doc.sents]
+        self.logger.info("Finding passive sentences")
+        for sent in sentences:
+            for token in sent:
+                if token.head.tag_ == "VBN" and token.dep_ == "auxpass":
+                    passive.append(sent)
+        return passive
 
-a = TextAnalyzer()
-file = io.open('text.txt','r',encoding='utf8').read()
-a.parse(file)
-print(a.match_corpus('corpus/weakverb'))
-print(a.match_corpus('corpus/filler'))
-print(a.replacable_from_corpus('corpus/sensory/visual'))
-print(a.replacable_from_corpus('corpus/sensory/tasteandsmell'))
-print(a.replacable_from_corpus('corpus/sensory/tactile'))
-print(a.replacable_from_corpus('corpus/sensory/motion'))
-print(a.replacable_from_corpus('corpus/sensory/auditory'))
+
+if __name__ == "__main__":
+    a = TextAnalyzer()
+    file = io.open('text.txt','r',encoding='utf8').read()
+    a.parse(file)
+    print(a.passive_sents())
+    print(a.match_corpus('weakverb'))
+    print(a.match_corpus('filler'))
+    print(a.replacable_from_corpus('visual'))
+    print(a.replacable_from_corpus('tasteandsmell'))
+    print(a.replacable_from_corpus('tactile'))
+    print(a.replacable_from_corpus('motion'))
+    print(a.replacable_from_corpus('auditory'))
