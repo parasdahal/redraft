@@ -67,7 +67,7 @@ class TextAnalyzer:
         word_tokens = [self.nlp(word) for word in words]
         for token in self.doc:
             for word in word_tokens:
-                if token.similarity(word) > 0.75:
+                if token.similarity(word) > 0.75 and token.similarity(word) <0.99:
                     replace.append((token.i,token,word,token.similarity(word)))
         return replace
 
@@ -84,16 +84,32 @@ class TextAnalyzer:
                     passive.append(sent)
         return passive
 
+    def adverb_tokens(self):
+        """
+        """
+        self.logger.info("Identifying adverbs in the document")
+        return [(token.i,token) for token in self.doc if token.pos_ == "ADV" and token.dep_ == "advmod"]
+
+    def modal_tokens(self):
+        """
+        Verb modifiers signifying ability or necessity. They can weaken statements by making them uncertain or too radical.
+        """
+        self.logger.info("Identifying modal verbs")
+        return [(token.i,token) for token in self.doc if token.tag_ == "MD"]
+
 
 if __name__ == "__main__":
     a = TextAnalyzer()
     file = io.open('text.txt','r',encoding='utf8').read()
     a.parse(file)
-    print(a.passive_sents())
-    print(a.match_corpus('weakverb'))
-    print(a.match_corpus('filler'))
-    print(a.replacable_from_corpus('visual'))
-    print(a.replacable_from_corpus('tasteandsmell'))
-    print(a.replacable_from_corpus('tactile'))
-    print(a.replacable_from_corpus('motion'))
-    print(a.replacable_from_corpus('auditory'))
+    print(a.noun_cluster())
+    # print(a.adverb_tokens())
+    # print(a.modal_tokens())
+    # print(a.passive_sents())
+    # print(a.match_corpus('weakverb'))
+    # print(a.match_corpus('filler'))
+    # print(a.replacable_from_corpus('visual'))
+    # print(a.replacable_from_corpus('tasteandsmell'))
+    # print(a.replacable_from_corpus('tactile'))
+    # print(a.replacable_from_corpus('motion'))
+    # print(a.replacable_from_corpus('auditory'))
