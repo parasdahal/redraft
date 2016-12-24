@@ -42,9 +42,29 @@ class TextAnalyzer:
         self.logger.info("Matching document with corpus %s",path)
         match = [(token.i,token) for token in self.doc if token.text in words]
         return match
+    
+    def replacable_from_corpus(self,path):
+        """
+        Find tokens in document that can be replaced by corpus words 
+        """
+        replace = list()
+        words = self.load_corpus(path)
+        self.logger.info("Finding replacable tokens from corpus %s",path)
+        word_tokens = [self.nlp(word) for word in words]
+        for token in self.doc:
+            for word in word_tokens:
+                if token.similarity(word) > 0.75:
+                    replace.append((token.i,token,word,token.similarity(word)))
+        return replace
+
 
 a = TextAnalyzer()
 file = io.open('text.txt','r',encoding='utf8').read()
 a.parse(file)
 print(a.match_corpus('corpus/weakverb'))
 print(a.match_corpus('corpus/filler'))
+print(a.replacable_from_corpus('corpus/sensory/visual'))
+print(a.replacable_from_corpus('corpus/sensory/tasteandsmell'))
+print(a.replacable_from_corpus('corpus/sensory/tactile'))
+print(a.replacable_from_corpus('corpus/sensory/motion'))
+print(a.replacable_from_corpus('corpus/sensory/auditory'))
