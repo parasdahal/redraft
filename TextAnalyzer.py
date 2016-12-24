@@ -2,6 +2,7 @@ import spacy
 import io
 import logging
 import os
+import pyphen
 
 class TextAnalyzer:
     """
@@ -24,11 +25,30 @@ class TextAnalyzer:
 
     def parse(self, text):
         """
-        load the text and create spacy nlp object
+        load the text and create spacy nlp object and returns stats
         """
         self.logger.info("Parsing text")
         self.doc = self.nlp(text)
+        self.sents = [sent for sent in self.doc.sents]
+        self.words = [token for token in self.doc if token.is_punct == False and token.is_space == False]
+        self.stats = self.stats()
+        return self.stats
         
+    def stats(self):
+        """
+        Calculate basic stats about the document
+        """
+        stats = {}
+        hp = pyphen.Pyphen(lang='en')
+        syllable_per_word = [len(hp.positions(word.lower_))+1 for word in self.words]
+        stats["n_sents"] = len(self.sents)
+        stats["n_words"] = len(self.words)
+        stats["n_unique_words"] = len(set(self.words))
+        stats["n_syllables"] = sum(syllable_per_word)
+        stats["n_polysyllables"] = sum([1 for n in syllable_per_word if n >=3])
+        stats["flesch_readability"] = 206.835 - 1.015 * (stats["n_words"]/stats["n_sents"]) - 84.6*(stats["n_syllables"]/stats["n_words"])
+        return stats
+
     def corpus_to_list(self, path):
         """
         Loads the corpus and returns a list of words on the corpus
@@ -75,7 +95,7 @@ class TextAnalyzer:
         """
         """
         self.logger.info("Finding long sentences")
-        return [sent for sent in self.doc.sents if len(sent) > 30]
+        return [sent for sent in self.sents if len(sent) > 30]
 
     def passive_sents(self):
         """
@@ -109,7 +129,7 @@ class TextAnalyzer:
 if __name__ == "__main__":
     a = TextAnalyzer()
     file = io.open('text.txt','r',encoding='utf8').read()
-    a.parse(file)
+    print(a.parse(file))
     print(a.long_sent())
     # print(a.adverb_tokens())
     # print(a.modal_tokens())
