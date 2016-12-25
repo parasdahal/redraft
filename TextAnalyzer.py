@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import spacy
 import io
 import logging
@@ -31,10 +32,10 @@ class TextAnalyzer:
         self.doc = self.nlp(text)
         self.sents = [sent for sent in self.doc.sents]
         self.words = [token for token in self.doc if token.is_punct == False and token.is_space == False]
-        self.stats = self.stats()
+        self.stats = self.__stats()
         return self.stats
         
-    def stats(self):
+    def __stats(self):
         """
         Calculate basic stats about the document
         """
@@ -49,7 +50,7 @@ class TextAnalyzer:
         stats["flesch_readability"] = 206.835 - 1.015 * (stats["n_words"]/stats["n_sents"]) - 84.6*(stats["n_syllables"]/stats["n_words"])
         return stats
 
-    def corpus_to_list(self, path):
+    def __corpus_to_list(self, path):
         """
         Loads the corpus and returns a list of words on the corpus
         """
@@ -65,7 +66,7 @@ class TextAnalyzer:
         corpora = dict()
         for root,dir,files in os.walk(path):
             for name in files:
-                corpora[name] = self.corpus_to_list(os.path.join(root,name))
+                corpora[name] = self.__corpus_to_list(os.path.join(root,name))
         return corpora
 
     def match_corpus(self,corpus):
@@ -74,7 +75,7 @@ class TextAnalyzer:
         """
         words = self.corpora[corpus]
         self.logger.info("Matching document with corpus %s",corpus)
-        match = [(token.i,token) for token in self.doc if token.text in words]
+        match = [{"index":token.i,"token":token.text} for token in self.doc if token.text in words]
         return match
     
     def replacable_from_corpus(self,corpus):
@@ -88,14 +89,14 @@ class TextAnalyzer:
         for token in self.doc:
             for word in word_tokens:
                 if token.similarity(word) > 0.75 and token.similarity(word) <0.99:
-                    replace.append((token.i,token,word,token.similarity(word)))
+                    replace.append({"index":token.i,"token":token.text,"replace":word.text,"similarity":token.similarity(word)})
         return replace
     
     def long_sent(self):
         """
         """
         self.logger.info("Finding long sentences")
-        return [sent for sent in self.sents if len(sent) > 30]
+        return [{"start":sent.start,"end":sent.end,"sent":sent.text} for sent in self.sents if len(sent) > 40]
 
     def passive_sents(self):
         """
@@ -106,38 +107,19 @@ class TextAnalyzer:
         self.logger.info("Finding passive sentences")
         for sent in sentences:
             for token in sent:
-                if token.head.tag_ == "VBN" and token.dep_ == "auxpass":
-                    passive.append(sent)
+                if token.head.tag_ == "VBN" and token.dep_ == "auxpass" and {"start":sent.start,"end":sent.end,"sent":sent.text} not in passive:
+                    passive.append({"start":sent.start,"end":sent.end,"sent":sent.text})
         return passive
 
     def adverb_tokens(self):
         """
         """
         self.logger.info("Identifying adverbs in the document")
-        return [(token.i,token) for token in self.doc if token.pos_ == "ADV" and token.dep_ == "advmod"]
+        return [{"index":token.i,"token":token.text} for token in self.doc if token.pos_ == "ADV" and token.dep_ == "advmod"]
 
     def modal_tokens(self):
         """
         Verb modifiers signifying ability or necessity. They can weaken statements by making them uncertain or too radical.
         """
         self.logger.info("Identifying modal verbs")
-        return [(token.i,token) for token in self.doc if token.tag_ == "MD"]
-
-    
-
-
-if __name__ == "__main__":
-    a = TextAnalyzer()
-    file = io.open('text.txt','r',encoding='utf8').read()
-    print(a.parse(file))
-    print(a.long_sent())
-    # print(a.adverb_tokens())
-    # print(a.modal_tokens())
-    # print(a.passive_sents())
-    # print(a.match_corpus('weakverb'))
-    # print(a.match_corpus('filler'))
-    # print(a.replacable_from_corpus('visual'))
-    # print(a.replacable_from_corpus('tasteandsmell'))
-    # print(a.replacable_from_corpus('tactile'))
-    # print(a.replacable_from_corpus('motion'))
-    # print(a.replacable_from_corpus('auditory'))
+        return [{"index":token.i,"token":token.text} for token in self.doc if token.tag_ == "MD"]
