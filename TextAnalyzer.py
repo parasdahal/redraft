@@ -75,7 +75,7 @@ class TextAnalyzer:
         """
         words = self.corpora[corpus]
         self.logger.info("Matching document with corpus %s",corpus)
-        match = [{"index":token.i,"token":token.text} for token in self.doc if token.text in words]
+        match = [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text} for token in self.doc if token.text in words]
         return match
     
     def replacable_from_corpus(self,corpus):
@@ -89,11 +89,12 @@ class TextAnalyzer:
         for token in self.doc:
             for word in word_tokens:
                 if token.similarity(word) > 0.75 and token.similarity(word) <0.99:
-                    replace.append({"index":token.i,"token":token.text,"replace":word.text,"similarity":token.similarity(word)})
+                    replace.append({"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text,"replace":word.text,"similarity":token.similarity(word)})
         return replace
     
     def long_sent(self):
         """
+        Sentences with more than 40 tokens
         """
         self.logger.info("Finding long sentences")
         return [{"start":sent.start,"end":sent.end,"sent":sent.text} for sent in self.sents if len(sent) > 40]
@@ -113,22 +114,21 @@ class TextAnalyzer:
 
     def adverb_tokens(self):
         """
+        adverbs and modifiers 
         """
         self.logger.info("Identifying adverbs in the document")
-        return [{"index":token.i,"token":token.text} for token in self.doc if token.pos_ == "ADV" and token.dep_ == "advmod"]
+        return [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text} for token in self.doc if token.pos_ == "ADV" and token.dep_ == "advmod"]
 
     def modal_tokens(self):
         """
         Verb modifiers signifying ability or necessity. They can weaken statements by making them uncertain or too radical.
         """
         self.logger.info("Identifying modal verbs")
-        return [{"index":token.i,"token":token.text} for token in self.doc if token.tag_ == "MD"]
+        return [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text} for token in self.doc if token.tag_ == "MD"]
 
     def distant_sub_verb(self):
         """
         The farther subject and verb are in the sentence the more fuzzier the sentence sounds
         """
         self.logger.info("Identifying sentences with distant subject and verb")
-        return [{"start":s.start,"end":s.end,"sent":s.text} for s in self.sents for token in s if token.pos_ == "VERB" and token.left_edge.dep_ =="nsubj" and (token.i-token.left_edge.i)>(len(s)/2)]
-
-        
+        return [{"start":s.start,"end":s.end,"sent":s.text} for s in self.sents for token in s if token.pos_ == "VERB" and token.left_edge.dep_ =="nsubj" and len(s) > 7 and (token.i-token.left_edge.i)>(len(s)/2)]
