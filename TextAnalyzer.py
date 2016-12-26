@@ -18,7 +18,7 @@ class TextAnalyzer:
         self.logger = logging.getLogger("TextAnalyzer")
 
         self.logger.info("Loading corpora")
-        self.corpora =self.load_corpora(path="corpus")
+        self.corpora =self.__load_corpora(path="corpus")
         
         self.logger.info("Loading Spacy")
         self.nlp = spacy.load('en')
@@ -31,7 +31,7 @@ class TextAnalyzer:
         self.logger.info("Parsing text")
         self.doc = self.nlp(text)
         self.sents = [sent for sent in self.doc.sents]
-        self.words = [token for token in self.doc if token.is_punct == False and token.is_space == False]
+        self.words = [token.text for token in self.doc if token.is_punct == False and token.is_space == False]
         self.stats = self.__stats()
         return self.stats
         
@@ -41,7 +41,7 @@ class TextAnalyzer:
         """
         stats = {}
         hp = pyphen.Pyphen(lang='en')
-        syllable_per_word = [len(hp.positions(word.lower_))+1 for word in self.words]
+        syllable_per_word = [len(hp.positions(word))+1 for word in self.words]
         stats["n_sents"] = len(self.sents)
         stats["n_words"] = len(self.words)
         stats["n_unique_words"] = len(set(self.words))
@@ -59,7 +59,7 @@ class TextAnalyzer:
         	words = [word.rstrip('\n').lower() for word in corp]
         return words
     
-    def load_corpora(self,path="corpus"):
+    def __load_corpora(self,path="corpus"):
         """
         Loads the corpuses in corpus directory and returns a corpora dictionary
         """
@@ -123,3 +123,12 @@ class TextAnalyzer:
         """
         self.logger.info("Identifying modal verbs")
         return [{"index":token.i,"token":token.text} for token in self.doc if token.tag_ == "MD"]
+
+    def distant_sub_verb(self):
+        """
+        The farther subject and verb are in the sentence the more fuzzier the sentence sounds
+        """
+        self.logger.info("Identifying sentences with distant subject and verb")
+        return [{"start":s.start,"end":s.end,"sent":s.text} for s in self.sents for token in s if token.pos_ == "VERB" and token.left_edge.dep_ =="nsubj" and (token.i-token.left_edge.i)>(len(s)/2)]
+
+        

@@ -1,6 +1,6 @@
 from flask import Flask,request
 import json
-from TextAnalyzer import TextAnalyzer
+from textanalyzer import TextAnalyzer
 app = Flask(__name__)
 
 @app.route("/analyze",methods=["POST"])
@@ -19,6 +19,7 @@ def analyze():
         "long_sents":analyzer.long_sent(),
         "adverbs":analyzer.adverb_tokens(),
         "passive_sents":analyzer.passive_sents(),
+        "fuzzy_sents":analyzer.distant_sub_verb(),
         "modal":analyzer.modal_tokens(),
         "weakverbs":analyzer.match_corpus('weakverb'),
         "filler":analyzer.match_corpus('filler'),
