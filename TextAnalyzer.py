@@ -4,11 +4,15 @@ import io
 import logging
 import os
 import pyphen
+from collections import Counter
 
 class TextAnalyzer:
     """
     This class performs metric calculations for a given document and returns a metric object
     """
+    FREQUENT_DENSITY_THRESHOLD = 40.0
+    VECTOR_SIMILARITY_THRESHOLD = 0.75
+    LONG_SENT_TOKEN_COUNT_THRESHOLD = 40
 
     def __init__(self):
         """
@@ -88,7 +92,7 @@ class TextAnalyzer:
         word_tokens = [self.nlp(word) for word in words]
         for token in self.doc:
             for word in word_tokens:
-                if token.similarity(word) > 0.75 and token.similarity(word) <0.99:
+                if token.similarity(word) > TextAnalyzer.VECTOR_SIMILARITY_THRESHOLD and token.similarity(word) <0.99:
                     replace.append({"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text,"replace":word.text,"similarity":token.similarity(word)})
         return replace
     
@@ -97,7 +101,7 @@ class TextAnalyzer:
         Sentences with more than 40 tokens
         """
         self.logger.info("Finding long sentences")
-        return [{"start":sent.start,"end":sent.end,"sent":sent.text} for sent in self.sents if len(sent) > 40]
+        return [{"start":sent.start,"end":sent.end,"sent":sent.text} for sent in self.sents if len(sent) > TextAnalyzer.LONG_SENT_TOKEN_COUNT_THRESHOLD]
 
     def passive_sents(self):
         """
@@ -132,3 +136,25 @@ class TextAnalyzer:
         """
         self.logger.info("Identifying sentences with distant subject and verb")
         return [{"start":s.start,"end":s.end,"sent":s.text} for s in self.sents for token in s if token.pos_ == "VERB" and token.left_edge.dep_ =="nsubj" and len(s) > 7 and (token.i-token.left_edge.i)>(len(s)/2)]
+    
+    def frequent_words(self):
+        """
+        Returns the words with high density in the text
+        """
+        self.logger.info("Finding frequently used words")
+        frequent = list()
+        words = [token.text for token in self.doc if token.is_stop != True and token.is_punct != True]
+        freq = Counter(words)
+        num_tokens = len(words)
+        common_words = freq.most_common(num_tokens)
+        for word in common_words:
+            density = (float(word[1])/num_tokens)*100
+            if density > TextAnalyzer.FREQUENT_DENSITY_THRESHOLD:
+                frequent.append(word)
+        return frequent
+
+
+
+
+        
+

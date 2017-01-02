@@ -23,8 +23,8 @@ def analyze():
         "modal":analyzer.modal_tokens(),
         "weakverbs":analyzer.match_corpus('weakverb'),
         "filler":analyzer.match_corpus('filler'),
-        "sensory":sensory
-        
+        "sensory":sensory,
+        "frequent_words":analyzer.frequent_words()
     }
     return json.dumps(response, ensure_ascii=False)
 
