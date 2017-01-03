@@ -24,7 +24,8 @@ def analyze():
         "weakverbs":analyzer.match_corpus('weakverb'),
         "filler":analyzer.match_corpus('filler'),
         "sensory":sensory,
-        "frequent_words":analyzer.frequent_words()
+        "frequent_words":analyzer.frequent_words(),
+        "grammar_expletives":analyzer.grammar_expletives()
     }
     return json.dumps(response, ensure_ascii=False)
 

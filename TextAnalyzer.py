@@ -152,6 +152,17 @@ class TextAnalyzer:
             if density > TextAnalyzer.FREQUENT_DENSITY_THRESHOLD:
                 frequent.append(word)
         return frequent
+    
+    def grammar_expletives(self):
+        """
+        Grammar expletives are literary constructions that begin with it here or there
+        """
+        self.logger.info("Finding grammar expletives")
+        exps = [u'There',u'It',u'Here']
+        verb_to_be = ["VBP","VBN","VBD","VBZ"]
+        exps_sents = [{"start":sent.start,"end":sent.end,"sent":sent.text} for sent in self.sents if sent[0].text in exps and sent[0].nbor().tag_ in verb_to_be]
+        return exps_sents
+
 
 
 
