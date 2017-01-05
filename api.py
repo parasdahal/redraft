@@ -25,7 +25,6 @@ def analyze():
         "fuzzy_sents":analyzer.distant_sub_verb(),
         "modal":analyzer.modal_tokens(),
         "weakverbs":analyzer.match_corpus('weakverb'),
-        "filler":analyzer.match_corpus('filler'),
         "sensory":sensory,
         "frequent_words":analyzer.frequent_words(),
         "grammar_expletives":analyzer.grammar_expletives(),

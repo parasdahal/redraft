@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import spacy
+from spacy.matcher import PhraseMatcher
 import io
 import logging
 import os
@@ -38,7 +39,7 @@ class TextAnalyzer:
         self.words = [token.text for token in self.doc if token.is_punct == False and token.is_space == False]
         self.stats = self.__stats()
         return self.stats
-        
+
     def __stats(self):
         """
         Calculate basic stats about the document
@@ -173,12 +174,21 @@ class TextAnalyzer:
         """
         """
         self.logger.info("Suggestion from the index")
+        text = self.nlp(self.doc.text.lower())
         rules = list()
         with io.open('weakwriting','r',encoding='utf8') as doc:
             rules = [tuple(line.rstrip('\n').split('::')) for line in doc]
-        rules = [(self.nlp(item[0]),item[-1]) for item in rules ]
-        matches = [{"phrase":rule[0].text,"suggestion":rule[1]} for rule in rules for token in self.doc if rule[0].text == token.text]
-        return matches
+        rules = [(self.nlp(item[0].lower()),item[-1]) for item in rules ]
+        rules_dict = dict()
+        for key,val in rules:
+            rules_dict[key.text]=val
+        rules_phrases = [item[0] for item in rules]
+        matcher = PhraseMatcher(self.nlp.vocab,rules_phrases)
+        matches = matcher(text)
+        result = list()
+        for start,end,tag,label,m in matches:
+            result.append({"start":start,"end":end,"phrase":label,"suggestion":rules_dict[label]})
+        return result
         
 
 

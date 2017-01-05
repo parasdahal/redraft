@@ -1,6 +1,6 @@
 import cherrypy
 from paste.translogger import TransLogger
-from api import create_app
+from .api import create_app
 
 def run_server(app):
     app_logged = TransLogger(app)
