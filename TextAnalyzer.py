@@ -63,7 +63,7 @@ class TextAnalyzer:
         	words = [word.rstrip('\n').lower() for word in corp]
         return words
     
-    def __load_corpora(self,path="corpus"):
+    def __load_corpora(self, path="corpus"):
         """
         Loads the corpuses in corpus directory and returns a corpora dictionary
         """
@@ -73,7 +73,7 @@ class TextAnalyzer:
                 corpora[name] = self.__corpus_to_list(os.path.join(root,name))
         return corpora
 
-    def match_corpus(self,corpus):
+    def match_corpus(self, corpus):
         """
         Calls corpus_to_list method to get words from corpus and returns list of (index,token) match with tokens in self.doc 
         """
@@ -82,7 +82,7 @@ class TextAnalyzer:
         match = [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text} for token in self.doc if token.text in words]
         return match
     
-    def replacable_from_corpus(self,corpus):
+    def replacable_from_corpus(self, corpus):
         """
         Find tokens in document that can be replaced by corpus words 
         """
@@ -162,6 +162,25 @@ class TextAnalyzer:
         verb_to_be = ["VBP","VBN","VBD","VBZ"]
         exps_sents = [{"start":sent.start,"end":sent.end,"sent":sent.text} for sent in self.sents if sent[0].text in exps and sent[0].nbor().tag_ in verb_to_be]
         return exps_sents
+
+    def nominalization(self):
+        """
+        Identify words with ion suffix
+        """
+        self.logger.info("Identifying nominalization")
+        return [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text} for token in self.doc if token.suffix_ == "ion"]
+    def suggestions(self):
+        """
+        """
+        self.logger.info("Suggestion from the index")
+        rules = list()
+        with io.open('weakwriting','r',encoding='utf8') as doc:
+            rules = [tuple(line.rstrip('\n').split('::')) for line in doc]
+        rules = [(self.nlp(item[0]),item[-1]) for item in rules ]
+        matches = [{"phrase":rule[0].text,"suggestion":rule[1]} for rule in rules for token in self.doc if rule[0].text == token.text]
+        return matches
+        
+
 
 
 

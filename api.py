@@ -3,8 +3,11 @@ import json
 from textanalyzer import TextAnalyzer
 app = Flask(__name__)
 
-@app.route("/analyze",methods=["POST"])
+@app.route("/analyze", methods=["POST"])
 def analyze():
+    """
+    Main analysis route
+    """
     text = request.form['text']
     stats = analyzer.parse(text)
     sensory = {
@@ -25,12 +28,17 @@ def analyze():
         "filler":analyzer.match_corpus('filler'),
         "sensory":sensory,
         "frequent_words":analyzer.frequent_words(),
-        "grammar_expletives":analyzer.grammar_expletives()
+        "grammar_expletives":analyzer.grammar_expletives(),
+        "nomilization": analyzer.nominalization(),
+        "suggestions":analyzer.suggestions()
     }
     return json.dumps(response, ensure_ascii=False)
 
 
 def create_app():
+    """
+    Creating the routing app
+    """
     global analyzer
     analyzer = TextAnalyzer()
     return app
