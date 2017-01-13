@@ -1,7 +1,7 @@
 import React from 'react';
 import {Editor,EditorState,RichUtils} from 'draft-js';
 import ReactDOM from 'react-dom';
-
+import StyleButton from './styleButton'
 
 export default class App extends React.Component{
 
@@ -46,9 +46,7 @@ export default class App extends React.Component{
                        <Editor
                             editorState={this.state.editorState}
                             handleKeyCommand={this.handleKeyCommand}
-                            placeholder = "This is Redraft."
                             onChange={this.onChange}
-                            placeholder = "Redraft smart editor.."
                             spellCheck = {true}
                         />
                 </div>
@@ -56,39 +54,14 @@ export default class App extends React.Component{
     }
 
 }
-class StyleButton extends React.Component {
-    constructor() {
-        super();
-        this.onToggle = (e) => {
-            e.preventDefault();
-            this.props.onToggle(this.props.style);
-        };
-    }
-
-    render() {
-        let className = 'RichEditor-styleButton';
-        if (this.props.active) {
-            className += ' RichEditor-activeButton';
-        }
-
-        return (
-            <span className={className} onMouseDown={this.onToggle}>
-                {this.props.label}
-            </span>
-        );
-    }
-}
 
 const BLOCK_TYPES = [
     {label: 'H1', style: 'header-one'},
     {label: 'H2', style: 'header-two'},
     {label: 'H3', style: 'header-three'},
-    {label: 'H4', style: 'header-four'},
-    {label: 'H5', style: 'header-five'},
-    {label: 'H6', style: 'header-six'},
-    {label: 'Blockquote', style: 'blockquote'},
-    {label: 'UL', style: 'unordered-list-item'},
-    {label: 'OL', style: 'ordered-list-item'},
+    {label: 'Quote', style: 'blockquote'},
+    {label: 'Bullets', style: 'unordered-list-item'},
+    {label: 'Numbers', style: 'ordered-list-item'},
 ];
 
 const BlockStyleControls = (props) => {

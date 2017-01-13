@@ -13,10 +13,10 @@ export default class StyleButton extends React.Component{
     }
     render()
     {
-        let classes = 'Editor-stylebutton';
+        let classes = 'stylebutton';
         if(this.props.active)
         {
-            classes += ' Editor-activebutton';
+            classes += ' activebutton';
         }
         return(
             <span className={classes} onMouseDown={this.onToggle}>

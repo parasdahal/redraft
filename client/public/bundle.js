@@ -21497,9 +21497,11 @@
 
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _styleButton = __webpack_require__(307);
 
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	var _styleButton2 = _interopRequireDefault(_styleButton);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -21547,8 +21549,6 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _React$createElement;
-
 	            var editorState = this.state.editorState;
 
 	            return _react2.default.createElement(
@@ -21558,12 +21558,12 @@
 	                    editorState: editorState,
 	                    onToggle: this.toggleBlockType
 	                }),
-	                _react2.default.createElement(_draftJs.Editor, (_React$createElement = {
+	                _react2.default.createElement(_draftJs.Editor, {
 	                    editorState: this.state.editorState,
 	                    handleKeyCommand: this.handleKeyCommand,
-	                    placeholder: 'This is Redraft.',
-	                    onChange: this.onChange
-	                }, _defineProperty(_React$createElement, 'placeholder', 'Redraft smart editor..'), _defineProperty(_React$createElement, 'spellCheck', true), _React$createElement))
+	                    onChange: this.onChange,
+	                    spellCheck: true
+	                })
 	            );
 	        }
 	    }]);
@@ -21573,41 +21573,8 @@
 
 	exports.default = App;
 
-	var StyleButton = function (_React$Component2) {
-	    _inherits(StyleButton, _React$Component2);
 
-	    function StyleButton() {
-	        _classCallCheck(this, StyleButton);
-
-	        var _this2 = _possibleConstructorReturn(this, (StyleButton.__proto__ || Object.getPrototypeOf(StyleButton)).call(this));
-
-	        _this2.onToggle = function (e) {
-	            e.preventDefault();
-	            _this2.props.onToggle(_this2.props.style);
-	        };
-	        return _this2;
-	    }
-
-	    _createClass(StyleButton, [{
-	        key: 'render',
-	        value: function render() {
-	            var className = 'RichEditor-styleButton';
-	            if (this.props.active) {
-	                className += ' RichEditor-activeButton';
-	            }
-
-	            return _react2.default.createElement(
-	                'span',
-	                { className: className, onMouseDown: this.onToggle },
-	                this.props.label
-	            );
-	        }
-	    }]);
-
-	    return StyleButton;
-	}(_react2.default.Component);
-
-	var BLOCK_TYPES = [{ label: 'H1', style: 'header-one' }, { label: 'H2', style: 'header-two' }, { label: 'H3', style: 'header-three' }, { label: 'H4', style: 'header-four' }, { label: 'H5', style: 'header-five' }, { label: 'H6', style: 'header-six' }, { label: 'Blockquote', style: 'blockquote' }, { label: 'UL', style: 'unordered-list-item' }, { label: 'OL', style: 'ordered-list-item' }];
+	var BLOCK_TYPES = [{ label: 'H1', style: 'header-one' }, { label: 'H2', style: 'header-two' }, { label: 'H3', style: 'header-three' }, { label: 'Quote', style: 'blockquote' }, { label: 'Bullets', style: 'unordered-list-item' }, { label: 'Numbers', style: 'ordered-list-item' }];
 
 	var BlockStyleControls = function BlockStyleControls(props) {
 	    var editorState = props.editorState;
@@ -21619,7 +21586,7 @@
 	        'div',
 	        { className: 'RichEditor-controls' },
 	        BLOCK_TYPES.map(function (type) {
-	            return _react2.default.createElement(StyleButton, {
+	            return _react2.default.createElement(_styleButton2.default, {
 	                key: type.label,
 	                active: type.style === blockType,
 	                label: type.label,
@@ -39070,6 +39037,69 @@
 	}
 
 	module.exports = getRangeBoundingClientRect;
+
+/***/ },
+/* 307 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(32);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var StyleButton = function (_React$Component) {
+	    _inherits(StyleButton, _React$Component);
+
+	    function StyleButton() {
+	        _classCallCheck(this, StyleButton);
+
+	        var _this = _possibleConstructorReturn(this, (StyleButton.__proto__ || Object.getPrototypeOf(StyleButton)).call(this));
+
+	        _this.onToggle = function (e) {
+	            e.preventDefault();
+	            _this.props.onToggle(_this.props.style);
+	        };
+	        return _this;
+	    }
+
+	    _createClass(StyleButton, [{
+	        key: 'render',
+	        value: function render() {
+	            var classes = 'stylebutton';
+	            if (this.props.active) {
+	                classes += ' activebutton';
+	            }
+	            return _react2.default.createElement(
+	                'span',
+	                { className: classes, onMouseDown: this.onToggle },
+	                this.props.label
+	            );
+	        }
+	    }]);
+
+	    return StyleButton;
+	}(_react2.default.Component);
+
+	exports.default = StyleButton;
 
 /***/ }
 /******/ ]);

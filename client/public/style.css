@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css?family=Libre+Baskerville|Lora');
+
+body{
+  background-color: #FAFAFA;
+  font-family:'Arial',sans-serif;
+}
+#app{
+  width: 800px;
+  margin: 0 auto;
+  padding: 10px;
+}
+#app .editor .public-DraftEditor-content{
+  font-family: 'Libre Baskerville', serif;
+}
+#app .RichEditor-controls{
+  margin: 0 auto;
+  margin-bottom: 20px !important;
+  width: 300px;
+}
+#app .styleButton{
+  
+  padding: 5px;
+}
+#app .activeButton{
+  color: #C4E3F3;
+}
+h1,h2,h3,h4,h5,h6{
+  font-family: 'Lora', serif;
+}
