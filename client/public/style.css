@@ -4,6 +4,9 @@ body{
   background-color: #FAFAFA;
   font-family:'Arial',sans-serif;
 }
+h1,h2,h3,h4,h5,h6{
+  font-family: 'Lora', serif;
+}
 #app{
   width: 800px;
   margin: 0 auto;
@@ -16,14 +19,39 @@ body{
   margin: 0 auto;
   margin-bottom: 20px !important;
   width: 300px;
+  transition: all 0.1s ease;
+  opacity: 0.3;
+}
+#app .RichEditor-controls:hover{
+  opacity: 1;
 }
 #app .styleButton{
-  
   padding: 5px;
+  cursor: pointer;
+}
+#app .styleButton:hover{
+  text-decoration: underline;
 }
 #app .activeButton{
-  color: #C4E3F3;
+  color: #88CCF1;
+  cursor: pointer;
 }
-h1,h2,h3,h4,h5,h6{
-  font-family: 'Lora', serif;
+
+blockquote {
+  background: #f5f5f5;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+blockquote p {
+  display: inline;
 }
