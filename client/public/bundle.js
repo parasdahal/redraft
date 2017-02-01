@@ -21497,15 +21497,19 @@
 
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 
-	var _styleButton = __webpack_require__(307);
+	var _decorator = __webpack_require__(307);
+
+	var _decorator2 = _interopRequireDefault(_decorator);
+
+	var _styleButton = __webpack_require__(308);
 
 	var _styleButton2 = _interopRequireDefault(_styleButton);
 
-	var _axios = __webpack_require__(308);
+	var _axios = __webpack_require__(309);
 
 	var _axios2 = _interopRequireDefault(_axios);
 
-	var _immutable = __webpack_require__(333);
+	var _immutable = __webpack_require__(334);
 
 	var _immutable2 = _interopRequireDefault(_immutable);
 
@@ -21517,15 +21521,15 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	/**
+	 * Content initialized in the editor
+	 */
 	var rawContent = { "entityMap": {}, "blocks": [{ "key": "arjcf", "text": "It’s about all things being equal exhausting to continuously criticize your work, telling yourself you can do better. It’s exhausting to keep on thinking whether your work is good enough for people’s judgmental eyes.", "type": "unstyled", "depth": 0, "inlineStyleRanges": [], "entityRanges": [], "data": {} }, { "key": "7dtph", "text": "", "type": "unstyled", "depth": 0, "inlineStyleRanges": [], "entityRanges": [], "data": {} }, { "key": "epid5", "text": "I’ve always had the compulsive need to demonstrate my work only when it felt perfect. Only when it felt polished. Only when I was sure it would impress everyone.", "type": "unstyled", "depth": 0, "inlineStyleRanges": [], "entityRanges": [], "data": {} }, { "key": "b1e78", "text": "", "type": "unstyled", "depth": 0, "inlineStyleRanges": [], "entityRanges": [], "data": {} }, { "key": "3pphh", "text": "I can clearly see now that this need for perfection is an illusion. Like a mirage in the desert. You can never truly create something perfect. It won’t be perfect for everybody. Obsessing over perfection makes you vulnerable and kills your creativity. It might feed your ambition but will feast on your fear of rejection.", "type": "unstyled", "depth": 0, "inlineStyleRanges": [], "entityRanges": [], "data": {} }, { "key": "ucfq", "text": "", "type": "unstyled", "depth": 0, "inlineStyleRanges": [], "entityRanges": [], "data": {} }, { "key": "6ljtu", "text": "Also, everything you make will be criticized, or else ignored.", "type": "unstyled", "depth": 0, "inlineStyleRanges": [], "entityRanges": [], "data": {} }, { "key": "2fmfq", "text": "", "type": "unstyled", "depth": 0, "inlineStyleRanges": [], "entityRanges": [], "data": {} }, { "key": "cb0jm", "text": "But it’s okay. ", "type": "unstyled", "depth": 0, "inlineStyleRanges": [{ "offset": 0, "length": 14, "style": "ITALIC" }], "entityRanges": [], "data": {} }, { "key": "erbt7", "text": "I’d rather be criticized than ignored.", "type": "unstyled", "depth": 0, "inlineStyleRanges": [], "entityRanges": [], "data": {} }] };
 
+	/**
+	 * URL for analysis API
+	 */
 	var API_URL = "http://localhost:8888/analyze";
-
-	var styleMap = {
-	    'modal': {
-	        backgroundColor: 'green'
-	    }
-	};
 
 	var App = function (_React$Component) {
 	    _inherits(App, _React$Component);
@@ -21533,9 +21537,21 @@
 	    function App(props) {
 	        _classCallCheck(this, App);
 
+	        /**
+	         * Entity key map 
+	         */
 	        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-	        _this.state = { editorState: _draftJs.EditorState.createWithContent((0, _draftJs.convertFromRaw)(rawContent)) };
+	        _this.suggestionEntityKeys = {
+	            modal: _draftJs.Entity.create('modal', 'IMMUTABLE', { suggestion: 'Remove modals they are bad.' }),
+	            adverbs: _draftJs.Entity.create('adverbs', 'IMMUTABLE', { suggestion: 'Yucks adverbs they are path to hell.' })
+	        };
+
+	        _this.state = { editorState: _draftJs.EditorState.createWithContent((0, _draftJs.convertFromRaw)(rawContent), _decorator2.default) };
+
+	        /**
+	         * Binding methods to the class
+	         */
 	        _this.onChange = function (editorState) {
 	            return _this.setState({ editorState: editorState });
 	        };
@@ -21550,15 +21566,11 @@
 	        };
 	        _this.getBlockKeys = _this.getBlockKeys.bind(_this);
 
-	        _this.modalEntityKey = _draftJs.Entity.create('modal', 'SEGMENTED');
-
 	        var editorState = _this.state.editorState;
 
 	        _this.logState = function () {
-	            var content = _this.state.editorState.getCurrentContent();
-	            console.log(JSON.stringify((0, _draftJs.convertToRaw)(content)));
+	            var content = _this.state.editorState.getCurrentContent();console.log((0, _draftJs.convertToRaw)(content));
 	        };
-
 	        return _this;
 	    }
 
@@ -21587,6 +21599,7 @@
 	            for (var i = 0; i < blocks.length; i++) {
 	                var len = blocks[i].text.length;
 	                keyBlocks.push({
+	                    index: i,
 	                    key: blocks[i].key,
 	                    start: count,
 	                    end: count + len,
@@ -21599,6 +21612,7 @@
 	            for (var i = 0; i < keyBlocks.length; i++) {
 	                if (start >= keyBlocks[i].start && end <= keyBlocks[i].end) {
 	                    blocks.push({
+	                        index: keyBlocks[i].index,
 	                        key: keyBlocks[i].key,
 	                        startOffset: keyBlocks[i].start,
 	                        endOffset: keyBlocks[i].end
@@ -21612,35 +21626,37 @@
 	        value: function _getSuggestion() {
 	            var _this2 = this;
 
-	            var server = { "modal": [{ "index": 17, "token": "can", "end": 106, "start": 103 }, { "index": 68, "token": "would", "end": 360, "start": 355 }, { "index": 73, "token": "can", "end": 384, "start": 381 }, { "index": 94, "token": "can", "end": 483, "start": 480 }, { "index": 102, "token": "won\'t", "end": 530, "start": 525 }, { "index": 120, "token": "might", "end": 639, "start": 634 }, { "index": 125, "token": "will", "end": 667, "start": 663 }, { "index": 138, "token": "will", "end": 731, "start": 727 }], "nomilization": [{ "index": 81, "token": "perfection", "end": 430, "start": 420 }, { "index": 84, "token": "illusion", "end": 445, "start": 437 }, { "index": 110, "token": "perfection", "end": 582, "start": 572 }, { "index": 123, "token": "ambition", "end": 658, "start": 650 }, { "index": 131, "token": "rejection", "end": 699, "start": 690 }] };
+	            var server = { "modal": [{ "index": 17, "token": "can", "end": 106, "start": 103 }, { "index": 69, "token": "would", "end": 361, "start": 356 }, { "index": 75, "token": "can", "end": 386, "start": 383 }, { "index": 96, "token": "can", "end": 485, "start": 482 }, { "index": 104, "token": "won’t", "end": 532, "start": 527 }, { "index": 122, "token": "might", "end": 641, "start": 636 }, { "index": 127, "token": "will", "end": 669, "start": 665 }, { "index": 141, "token": "will", "end": 734, "start": 730 }], "adverbs": [{ "index": 9, "token": "continuously", "end": 60, "start": 48 }, { "index": 19, "token": "better", "end": 116, "start": 110 }, { "index": 33, "token": "enough", "end": 186, "start": 180 }, { "index": 42, "token": "always", "end": 229, "start": 223 }, { "index": 51, "token": "only", "end": 281, "start": 277 }, { "index": 52, "token": "when", "end": 286, "start": 282 }, { "index": 57, "token": "Only", "end": 308, "start": 304 }, { "index": 58, "token": "when", "end": 313, "start": 309 }, { "index": 63, "token": "Only", "end": 336, "start": 332 }, { "index": 64, "token": "when", "end": 341, "start": 337 }, { "index": 76, "token": "clearly", "end": 394, "start": 387 }, { "index": 78, "token": "now", "end": 402, "start": 399 }, { "index": 98, "token": "truly", "end": 497, "start": 492 }, { "index": 136, "token": "Also", "end": 708, "start": 704 }, { "index": 146, "token": "else", "end": 757, "start": 753 }, { "index": 157, "token": "rather", "end": 794, "start": 788 }] };
 
-	            // array to hold selections on the text based on the tokens recieved from server
 	            var selectionStates = [];
-	            var count = 0;
 	            Object.keys(server).forEach(function (key) {
 	                var tokens = server[key];
 	                tokens.map(function (token) {
 	                    var blocks = _this2.getBlockKeys(token.start, token.end);
 	                    blocks.map(function (block) {
-	                        console.log(token.token, block.key, token.start - block.startOffset - count, token.end - block.startOffset);
+
 	                        var selectionState = _draftJs.SelectionState.createEmpty(block.key);
-	                        selectionStates.push(selectionState.merge({
-	                            anchorOffset: token.start - block.startOffset - count,
-	                            focusOffset: token.end - block.startOffset
-	                        }));
-	                        count++;
+	                        var start = token.start - block.startOffset - block.index;
+	                        var end = start + (token.end - token.start);
+	                        var updatedSelection = selectionState.merge({
+	                            anchorOffset: start,
+	                            focusOffset: end
+	                        });
+	                        selectionStates.push({
+	                            entity: key,
+	                            selection: updatedSelection
+	                        });
 	                    });
 	                });
 	            });
 	            var editorState = this.state.editorState;
 	            var content = this.state.editorState.getCurrentContent();
-	            selectionStates.map(function (updatedState) {
-	                content = _draftJs.Modifier.applyInlineStyle(content, updatedState, 'modal');
+	            selectionStates.map(function (item) {
+	                var entity = item.entity;
+	                var entityKey = _this2.suggestionEntityKeys[entity];
+	                content = _draftJs.Modifier.applyEntity(content, item.selection, entityKey);
 	            });
-
-	            this.setState({
-	                editorState: _draftJs.EditorState.createWithContent(content)
-	            });
+	            this.setState({ editorState: _draftJs.EditorState.createWithContent(content, _decorator2.default) });
 	        }
 	    }, {
 	        key: 'render',
@@ -21663,7 +21679,6 @@
 	                _react2.default.createElement(BlockStyleControls, { editorState: editorState, onToggle: this.toggleBlockType }),
 	                _react2.default.createElement(_draftJs.Editor, {
 	                    editorState: this.state.editorState,
-	                    customStyleMap: styleMap,
 	                    handleKeyCommand: this.handleKeyCommand,
 	                    onChange: this.onChange,
 	                    spellCheck: true
@@ -39152,6 +39167,70 @@
 	    value: true
 	});
 
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _draftJs = __webpack_require__(179);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var styles = {
+	    'modal': {
+	        backgroundColor: '#B0DBE2'
+	    },
+	    'adverbs': {
+	        backgroundColor: '#F7EFC0'
+	    }
+	};
+
+	function getEntityStrategy(entityType) {
+	    return function (contentBlock, callback, contentState) {
+	        contentBlock.findEntityRanges(function (character) {
+	            var entityKey = character.getEntity();
+	            if (entityKey === null) {
+	                return false;
+	            }
+	            return _draftJs.Entity.get(entityKey).getType() === entityType;
+	        }, callback);
+	    };
+	}
+
+	var ModalSpan = function ModalSpan(props) {
+	    return _react2.default.createElement(
+	        'span',
+	        { style: styles.modal, 'data-tooltip': 'Modal: Remove modal verb' },
+	        props.children
+	    );
+	};
+	var AdverbsSpan = function AdverbsSpan(props) {
+	    return _react2.default.createElement(
+	        'span',
+	        { style: styles.adverbs, 'data-tooltip': 'Adverb: Use a forceful word' },
+	        props.children
+	    );
+	};
+
+	var decorator = new _draftJs.CompositeDecorator([{
+	    strategy: getEntityStrategy('modal'),
+	    component: ModalSpan
+	}, {
+	    strategy: getEntityStrategy('adverbs'),
+	    component: AdverbsSpan
+	}]);
+
+	exports.default = decorator;
+
+/***/ },
+/* 308 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
@@ -39206,21 +39285,21 @@
 	exports.default = StyleButton;
 
 /***/ },
-/* 308 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(309);
+	module.exports = __webpack_require__(310);
 
 /***/ },
-/* 309 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(310);
-	var bind = __webpack_require__(311);
-	var Axios = __webpack_require__(312);
-	var defaults = __webpack_require__(313);
+	var utils = __webpack_require__(311);
+	var bind = __webpack_require__(312);
+	var Axios = __webpack_require__(313);
+	var defaults = __webpack_require__(314);
 
 	/**
 	 * Create an instance of Axios
@@ -39253,15 +39332,15 @@
 	};
 
 	// Expose Cancel & CancelToken
-	axios.Cancel = __webpack_require__(330);
-	axios.CancelToken = __webpack_require__(331);
-	axios.isCancel = __webpack_require__(327);
+	axios.Cancel = __webpack_require__(331);
+	axios.CancelToken = __webpack_require__(332);
+	axios.isCancel = __webpack_require__(328);
 
 	// Expose all/spread
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(332);
+	axios.spread = __webpack_require__(333);
 
 	module.exports = axios;
 
@@ -39270,12 +39349,12 @@
 
 
 /***/ },
-/* 310 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var bind = __webpack_require__(311);
+	var bind = __webpack_require__(312);
 
 	/*global toString:true*/
 
@@ -39575,7 +39654,7 @@
 
 
 /***/ },
-/* 311 */
+/* 312 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -39592,17 +39671,17 @@
 
 
 /***/ },
-/* 312 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var defaults = __webpack_require__(313);
-	var utils = __webpack_require__(310);
-	var InterceptorManager = __webpack_require__(324);
-	var dispatchRequest = __webpack_require__(325);
-	var isAbsoluteURL = __webpack_require__(328);
-	var combineURLs = __webpack_require__(329);
+	var defaults = __webpack_require__(314);
+	var utils = __webpack_require__(311);
+	var InterceptorManager = __webpack_require__(325);
+	var dispatchRequest = __webpack_require__(326);
+	var isAbsoluteURL = __webpack_require__(329);
+	var combineURLs = __webpack_require__(330);
 
 	/**
 	 * Create a new instance of Axios
@@ -39683,13 +39762,13 @@
 
 
 /***/ },
-/* 313 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(310);
-	var normalizeHeaderName = __webpack_require__(314);
+	var utils = __webpack_require__(311);
+	var normalizeHeaderName = __webpack_require__(315);
 
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -39706,10 +39785,10 @@
 	  var adapter;
 	  if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(315);
+	    adapter = __webpack_require__(316);
 	  } else if (typeof process !== 'undefined') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(315);
+	    adapter = __webpack_require__(316);
 	  }
 	  return adapter;
 	}
@@ -39783,12 +39862,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 314 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(310);
+	var utils = __webpack_require__(311);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -39801,18 +39880,18 @@
 
 
 /***/ },
-/* 315 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(310);
-	var settle = __webpack_require__(316);
-	var buildURL = __webpack_require__(319);
-	var parseHeaders = __webpack_require__(320);
-	var isURLSameOrigin = __webpack_require__(321);
-	var createError = __webpack_require__(317);
-	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(322);
+	var utils = __webpack_require__(311);
+	var settle = __webpack_require__(317);
+	var buildURL = __webpack_require__(320);
+	var parseHeaders = __webpack_require__(321);
+	var isURLSameOrigin = __webpack_require__(322);
+	var createError = __webpack_require__(318);
+	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(323);
 
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -39908,7 +39987,7 @@
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(323);
+	      var cookies = __webpack_require__(324);
 
 	      // Add xsrf header
 	      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -39985,12 +40064,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 316 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var createError = __webpack_require__(317);
+	var createError = __webpack_require__(318);
 
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -40016,12 +40095,12 @@
 
 
 /***/ },
-/* 317 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var enhanceError = __webpack_require__(318);
+	var enhanceError = __webpack_require__(319);
 
 	/**
 	 * Create an Error with the specified message, config, error code, and response.
@@ -40039,7 +40118,7 @@
 
 
 /***/ },
-/* 318 */
+/* 319 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -40064,12 +40143,12 @@
 
 
 /***/ },
-/* 319 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(310);
+	var utils = __webpack_require__(311);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -40138,12 +40217,12 @@
 
 
 /***/ },
-/* 320 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(310);
+	var utils = __webpack_require__(311);
 
 	/**
 	 * Parse headers into an object
@@ -40181,12 +40260,12 @@
 
 
 /***/ },
-/* 321 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(310);
+	var utils = __webpack_require__(311);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -40255,7 +40334,7 @@
 
 
 /***/ },
-/* 322 */
+/* 323 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -40297,12 +40376,12 @@
 
 
 /***/ },
-/* 323 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(310);
+	var utils = __webpack_require__(311);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -40356,12 +40435,12 @@
 
 
 /***/ },
-/* 324 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(310);
+	var utils = __webpack_require__(311);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -40414,15 +40493,15 @@
 
 
 /***/ },
-/* 325 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(310);
-	var transformData = __webpack_require__(326);
-	var isCancel = __webpack_require__(327);
-	var defaults = __webpack_require__(313);
+	var utils = __webpack_require__(311);
+	var transformData = __webpack_require__(327);
+	var isCancel = __webpack_require__(328);
+	var defaults = __webpack_require__(314);
 
 	/**
 	 * Throws a `Cancel` if cancellation has been requested.
@@ -40499,12 +40578,12 @@
 
 
 /***/ },
-/* 326 */
+/* 327 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(310);
+	var utils = __webpack_require__(311);
 
 	/**
 	 * Transform the data for a request or a response
@@ -40525,7 +40604,7 @@
 
 
 /***/ },
-/* 327 */
+/* 328 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -40536,7 +40615,7 @@
 
 
 /***/ },
-/* 328 */
+/* 329 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -40556,7 +40635,7 @@
 
 
 /***/ },
-/* 329 */
+/* 330 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -40574,7 +40653,7 @@
 
 
 /***/ },
-/* 330 */
+/* 331 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -40599,12 +40678,12 @@
 
 
 /***/ },
-/* 331 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Cancel = __webpack_require__(330);
+	var Cancel = __webpack_require__(331);
 
 	/**
 	 * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -40662,7 +40741,7 @@
 
 
 /***/ },
-/* 332 */
+/* 333 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -40695,7 +40774,7 @@
 
 
 /***/ },
-/* 333 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
