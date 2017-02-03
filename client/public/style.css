@@ -8,7 +8,7 @@ h1,h2,h3,h4,h5,h6{
   font-family: 'Lora', serif;
 }
 #app{
-  width: 800px;
+  width: 600px;
   margin: 0 auto;
   padding: 10px;
 }
@@ -60,7 +60,6 @@ blockquote p {
 [data-tooltip] {
   position: relative;
   z-index: 2;
-  cursor: pointer;
 }
 
 /* Hide the tooltip content by default */

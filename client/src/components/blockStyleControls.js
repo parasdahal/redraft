@@ -1,5 +1,4 @@
 import React from 'react';
-import {Editor,EditorState,ContentState,RichUtils} from 'draft-js';
 import ReactDOM from 'react-dom';
 import StyleButton from './styleButton'
 
@@ -34,3 +33,5 @@ const BlockStyleControls = (props) => {
         </div>
     );
 };
+
+export default BlockStyleControls;

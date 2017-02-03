@@ -1,5 +1,5 @@
 import React from 'react';
 import ReactDOM from "react-dom";
-import App from './components/app';
+import RedraftEditor from './components/editor';
 
-ReactDOM.render(<App/>,document.getElementById('app'));
+ReactDOM.render(<RedraftEditor/>,document.getElementById('app'));

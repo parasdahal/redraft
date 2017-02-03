@@ -3,10 +3,16 @@ import { Entity, CompositeDecorator } from 'draft-js'
 
 const styles = {
     'modal':{
-        backgroundColor:'#B0DBE2'
+        backgroundColor:'#E3EBF4'
     },
     'adverbs':{
         backgroundColor:'#F7EFC0'
+    },
+    'weakverbs':{
+        backgroundColor:'#F8E0D8'
+    },
+    'nomilization':{
+        backgroundColor:'#EEE5EB'
     }
 };
 
@@ -27,14 +33,28 @@ function getEntityStrategy(entityType) {
 
 const ModalSpan = (props) => {
     return (
-        <span style={styles.modal} data-tooltip="Modal: Remove modal verb">
+        <span style={styles.modal} data-tooltip="Modal">
         {props.children}
         </span>
     );
 };
 const AdverbsSpan = (props) => {
     return (
-        <span style={styles.adverbs} data-tooltip="Adverb: Use a forceful word">
+        <span style={styles.adverbs} data-tooltip="Adverb">
+        {props.children}
+        </span>
+    );
+};
+const WeakverbSpan = (props) => {
+    return (
+        <span style={styles.weakverbs} data-tooltip="Weak verb">
+        {props.children}
+        </span>
+    );
+};
+const NomilizationSpan = (props) => {
+    return (
+        <span style={styles.nomilization} data-tooltip="Nomilization">
         {props.children}
         </span>
     );
@@ -48,6 +68,14 @@ const decorator = new CompositeDecorator([
     {
         strategy: getEntityStrategy('adverbs'),
         component: AdverbsSpan,
+    },
+    {
+        strategy: getEntityStrategy('weakverbs'),
+        component: WeakverbSpan,
+    },
+    {
+        strategy: getEntityStrategy('nomilization'),
+        component: NomilizationSpan,
     }
 ]);
 
