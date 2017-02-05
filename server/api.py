@@ -33,17 +33,17 @@ def analyze():
         },
         "weakverb":{
             "title":"Weak Verb",
-            "description":"These words don’t trigger vivid imagery in reader's heads and usually require additional words to deliver a meaningful message. Substituting weak verbs with more specific ones will liven most texts.",
+            "description":"These words don't trigger vivid imagery in reader's heads and usually require additional words to deliver a meaningful message. Substituting weak verbs with more specific ones will liven most texts.",
             "instances":analyzer.match_corpus('weakverb')
         },
         "expletives":{
             "title":"Grammar Expletives",
-            "description":"When it, here, and there refer to nouns later in the sentence or – worse – to something unnamed, they weaken your writing by shifting emphasis away from the true drivers of your sentences.",
-            "instances"analyzer.grammar_expletives()
+            "description":"When it, here, and there refer to nouns later in the sentence or to something unnamed, they weaken your writing by shifting emphasis away from the true drivers of your sentences.",
+            "instances":analyzer.grammar_expletives()
         },
         "nominalization":{
             "title":"Nominalization",
-            "description":"Complex nouns extended from shorter verbs, adjectives and nouns. They often slow a reader down and may be hard to interpret.  Try to rearrange the sentence to use the original shorter and more lively version of the word."
+            "description":"Complex nouns extended from shorter verbs, adjectives and nouns. They often slow a reader down and may be hard to interpret.  Try to rearrange the sentence to use the original shorter and more lively version of the word.",
             "instances":analyzer.nominalization()
         },
         "suggestions":{
@@ -73,7 +73,7 @@ def analyze():
         },
         "auditory":{
             "title":"Auditory Sensory Word",
-            "description":"Words related to hearing describe sounds. For instance: crashing, thumping, piercing, tingling, squeaky. Often these words mimic sounds—that’s when they’re called onomatopoeic.",
+            "description":"Words related to hearing describe sounds. For instance: crashing, thumping, piercing, tingling, squeaky. Often these words mimic sounds.",
             "instances":analyzer.replacable_from_corpus('auditory')
         },
         "longsents":{

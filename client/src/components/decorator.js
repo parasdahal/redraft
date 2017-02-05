@@ -5,13 +5,13 @@ const styles = {
     'modal':{
         backgroundColor:'#E3EBF4'
     },
-    'adverbs':{
+    'adverb':{
         backgroundColor:'#F7EFC0'
     },
-    'weakverbs':{
+    'weakverb':{
         backgroundColor:'#F8E0D8'
     },
-    'nomilization':{
+    'nominailization':{
         backgroundColor:'#EEE5EB'
     }
 };
@@ -33,6 +33,7 @@ function getEntityStrategy(entityType) {
 
 const TokenSpan = (props) => {
     const entity = Entity.get(props.entityKey)
+    const data = entity.getData()
     return (
         <span style={styles[entity.getType()]} data-tooltip={entity.getType()}>
         {props.children}
@@ -46,15 +47,15 @@ const decorator = new CompositeDecorator([
         component: TokenSpan,
     },
     {
-        strategy: getEntityStrategy('adverbs'),
+        strategy: getEntityStrategy('adverb'),
         component: TokenSpan,
     },
     {
-        strategy: getEntityStrategy('weakverbs'),
+        strategy: getEntityStrategy('weakverb'),
         component: TokenSpan,
     },
     {
-        strategy: getEntityStrategy('nomilization'),
+        strategy: getEntityStrategy('nominalization'),
         component: TokenSpan,
     }
 ]);

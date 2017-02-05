@@ -78,7 +78,7 @@ class TextAnalyzer:
         """
         words = self.corpora[corpus]
         self.logger.info("Matching document with corpus %s",corpus)
-        match = [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text,"data":{"suggestion":"",remove:True}} for token in self.doc if token.text in words]
+        match = [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text,"data":{"suggestion":"","remove":True}} for token in self.doc if token.text in words]
         return match
     
     def replacable_from_corpus(self, corpus):
@@ -127,7 +127,7 @@ class TextAnalyzer:
         Verb modifiers signifying ability or necessity. They can weaken statements by making them uncertain or too radical.
         """
         self.logger.info("Identifying modal verbs")
-        return [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text} for token in self.doc if token.tag_ == "MD"]
+        return [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text,"data":{"suggestion":"Weakens statement. Remove or replace with stronger verb","remove":True}} for token in self.doc if token.tag_ == "MD"]
 
     def distant_sub_verb(self):
         """
