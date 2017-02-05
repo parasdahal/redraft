@@ -31,30 +31,10 @@ function getEntityStrategy(entityType) {
     };
 }
 
-const ModalSpan = (props) => {
+const TokenSpan = (props) => {
+    const entity = Entity.get(props.entityKey)
     return (
-        <span style={styles.modal} data-tooltip="Modal">
-        {props.children}
-        </span>
-    );
-};
-const AdverbsSpan = (props) => {
-    return (
-        <span style={styles.adverbs} data-tooltip="Adverb">
-        {props.children}
-        </span>
-    );
-};
-const WeakverbSpan = (props) => {
-    return (
-        <span style={styles.weakverbs} data-tooltip="Weak verb">
-        {props.children}
-        </span>
-    );
-};
-const NomilizationSpan = (props) => {
-    return (
-        <span style={styles.nomilization} data-tooltip="Nomilization">
+        <span style={styles[entity.getType()]} data-tooltip={entity.getType()}>
         {props.children}
         </span>
     );
@@ -63,19 +43,19 @@ const NomilizationSpan = (props) => {
 const decorator = new CompositeDecorator([
     {
         strategy: getEntityStrategy('modal'),
-        component: ModalSpan,
+        component: TokenSpan,
     },
     {
         strategy: getEntityStrategy('adverbs'),
-        component: AdverbsSpan,
+        component: TokenSpan,
     },
     {
         strategy: getEntityStrategy('weakverbs'),
-        component: WeakverbSpan,
+        component: TokenSpan,
     },
     {
         strategy: getEntityStrategy('nomilization'),
-        component: NomilizationSpan,
+        component: TokenSpan,
     }
 ]);
 

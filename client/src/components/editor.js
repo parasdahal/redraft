@@ -120,7 +120,7 @@ export default class RedraftEditor extends React.Component{
             tokens.map((token) => {
                 var blocks = this.getBlockKeys(token.start,token.end);
                 blocks.map((block) => {
-                        
+                        //TODO:Doesnt work properly for long sentences (maybe entity are clashing?)
                         var selectionState = SelectionState.createEmpty(block.key);
                         var start = token.start - block.startOffset - block.index;
                         var end = start + (token.end - token.start);
@@ -130,6 +130,7 @@ export default class RedraftEditor extends React.Component{
                         });
                         selectionStates.push({
                             entity:key,
+                            data:token.data,
                             selection:updatedSelection
                         });
                         
@@ -138,9 +139,10 @@ export default class RedraftEditor extends React.Component{
         });
         var editorState = this.state.editorState;
         var content = this.state.editorState.getCurrentContent();
-        //TODO: put suggestion information from server into entity data
         selectionStates.map((item)=>{
-                const entityKey = Entity.create(item.entity,'MUTABLE', {url: 'test'});
+                if(item.entity == 'suggestions')
+                    console.log(item)
+                const entityKey = Entity.create(item.entity,'MUTABLE', item.data);
                 content = Modifier.applyEntity(
                             content,
                             item.selection,

@@ -37,8 +37,6 @@ class TextAnalyzer:
         self.doc = self.nlp(text)
         self.sents = [sent for sent in self.doc.sents]
         self.words = [token.text for token in self.doc if token.is_punct == False and token.is_space == False]
-        self.stats = self.__stats()
-        return self.stats
 
     def __stats(self):
         """
@@ -80,7 +78,7 @@ class TextAnalyzer:
         """
         words = self.corpora[corpus]
         self.logger.info("Matching document with corpus %s",corpus)
-        match = [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text} for token in self.doc if token.text in words]
+        match = [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text,"data":{"suggestion":"",remove:True}} for token in self.doc if token.text in words]
         return match
     
     def replacable_from_corpus(self, corpus):
@@ -94,7 +92,7 @@ class TextAnalyzer:
         for token in self.doc:
             for word in word_tokens:
                 if token.similarity(word) > TextAnalyzer.VECTOR_SIMILARITY_THRESHOLD and token.similarity(word) <0.99:
-                    replace.append({"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text,"replace":word.text,"similarity":token.similarity(word)})
+                    replace.append({"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text,"data":{"replace":word.text,"suggestion":"Try replacing with following word","similarity":token.similarity(word),"remove":False}})
         return replace
     
     def long_sent(self):
@@ -102,7 +100,7 @@ class TextAnalyzer:
         Sentences with more than 40 tokens
         """
         self.logger.info("Finding long sentences")
-        return [{"start":sent.start,"end":sent.end,"sent":sent.text} for sent in self.sents if len(sent) > TextAnalyzer.LONG_SENT_TOKEN_COUNT_THRESHOLD]
+        return [{"start":sent.start,"end":sent.end,"token":sent.text,"data":{"suggestion":"Break down to smaller sentences.","remove":False}} for sent in self.sents if len(sent) > TextAnalyzer.LONG_SENT_TOKEN_COUNT_THRESHOLD]
 
     def passive_sents(self):
         """
@@ -114,7 +112,7 @@ class TextAnalyzer:
         for sent in sentences:
             for token in sent:
                 if token.head.tag_ == "VBN" and token.dep_ == "auxpass" and {"start":sent.start,"end":sent.end,"sent":sent.text} not in passive:
-                    passive.append({"start":sent.start,"end":sent.end,"sent":sent.text})
+                    passive.append({"start":sent.start,"end":sent.end,"token":sent.text,"data":{"suggestion":"Restructure to passive voice","remove":False}})
         return passive
 
     def adverb_tokens(self):
@@ -122,7 +120,7 @@ class TextAnalyzer:
         adverbs and modifiers 
         """
         self.logger.info("Identifying adverbs in the document")
-        return [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text} for token in self.doc if token.pos_ == "ADV" and token.dep_ == "advmod"]
+        return [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text,"data":{"suggestion":"Pick a more accurate verb","remove":True}} for token in self.doc if token.pos_ == "ADV" and token.dep_ == "advmod"]
 
     def modal_tokens(self):
         """
@@ -136,7 +134,7 @@ class TextAnalyzer:
         The farther subject and verb are in the sentence the more fuzzier the sentence sounds
         """
         self.logger.info("Identifying sentences with distant subject and verb")
-        return [{"start":s.start,"end":s.end,"sent":s.text} for s in self.sents for token in s if token.pos_ == "VERB" and token.left_edge.dep_ =="nsubj" and len(s) > 7 and (token.i-token.left_edge.i)>(len(s)/2)]
+        return [{"start":s.start,"end":s.end,"token":s.text,"data":{"suggestion":"Restructure the sentence","remove":False}} for s in self.sents for token in s if token.pos_ == "VERB" and token.left_edge.dep_ =="nsubj" and len(s) > 7 and (token.i-token.left_edge.i)>(len(s)/2)]
     
     def frequent_words(self):
         """
@@ -161,7 +159,7 @@ class TextAnalyzer:
         self.logger.info("Finding grammar expletives")
         exps = [u'There',u'It',u'Here']
         verb_to_be = ["VBP","VBN","VBD","VBZ"]
-        exps_sents = [{"start":sent.start,"end":sent.end,"sent":sent.text} for sent in self.sents if sent[0].text in exps and sent[0].nbor().tag_ in verb_to_be]
+        exps_sents = [{"start":sent.start,"end":sent.end,"token":sent.text,"data":{"suggestion":"Restructure the sentence.","remove":False}} for sent in self.sents if sent[0].text in exps and sent[0].nbor().tag_ in verb_to_be]
         return exps_sents
 
     def nominalization(self):
@@ -169,7 +167,8 @@ class TextAnalyzer:
         Identify words with ion suffix
         """
         self.logger.info("Identifying nominalization")
-        return [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text} for token in self.doc if token.suffix_ == "ion"]
+        return [{"index":token.i,"start":token.idx,"end":token.idx+len(token),"token":token.text,"data":{"suggestion":"Use lively version of the word","remove":False}} for token in self.doc if token.suffix_ == "ion"]
+    
     def suggestions(self):
         """
         """
@@ -187,14 +186,5 @@ class TextAnalyzer:
         matches = matcher(text)
         result = list()
         for start,end,tag,label,m in matches:
-            result.append({"start":start,"end":end,"phrase":label,"suggestion":rules_dict[label]})
+            result.append({"start":start,"end":end,"token":label,"data":{"suggestion":rules_dict[label],"remove":True}})
         return result
-        
-
-
-
-
-
-
-        
-
