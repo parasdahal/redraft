@@ -1,4 +1,4 @@
-# Redraft engine
+# Redraft
 
 Great writing is hard to learn. Good writing is not. Write clear,concise and punchy sentences with Redraft.
 

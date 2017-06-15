@@ -117,6 +117,7 @@ export default class RedraftEditor extends React.Component{
         var selectionStates = []
         Object.keys(server).forEach((key) => {
             var tokens = server[key];
+            var title_ = tokens.title;
             tokens.instances.map((token) => {
                 var blocks = this.getBlockKeys(token.start,token.end);
                 blocks.map((block) => {
@@ -128,9 +129,12 @@ export default class RedraftEditor extends React.Component{
                             anchorOffset:start,
                             focusOffset:end,
                         });
+                        if(title_ == "Common Suggestions")console.log(block.key,start,end);
+                        var data = token.data;
+                        data.title = title_;
                         selectionStates.push({
                             entity:key,
-                            data:token.data,
+                            data:data,
                             selection:updatedSelection
                         });
                         
@@ -142,11 +146,14 @@ export default class RedraftEditor extends React.Component{
         selectionStates.map((item)=>{
                 const data = item.data;
                 const entityKey = Entity.create(item.entity,'MUTABLE', data);
+                
+                // Problem of entities not working seems to be here
                 content = Modifier.applyEntity(
                             content,
                             item.selection,
                             entityKey
                 );
+                if(item.data.title == "Common Suggestions")console.log(entityKey,convertToRaw(content));
         })  
         this.setState({editorState: EditorState.createWithContent(content,decorator)});
 

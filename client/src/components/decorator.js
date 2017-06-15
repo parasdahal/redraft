@@ -1,21 +1,6 @@
 import React from 'react'
 import { Entity, CompositeDecorator } from 'draft-js'
 
-const styles = {
-    'modal':{
-        backgroundColor:'#E3EBF4'
-    },
-    'adverb':{
-        backgroundColor:'#F7EFC0'
-    },
-    'weakverb':{
-        backgroundColor:'#F8E0D8'
-    },
-    'nominailization':{
-        backgroundColor:'#EEE5EB'
-    }
-};
-
 function getEntityStrategy(entityType) {
     return function(contentBlock, callback, contentState) {
         contentBlock.findEntityRanges(
@@ -33,12 +18,41 @@ function getEntityStrategy(entityType) {
 
 const TokenSpan = (props) => {
     const entity = Entity.get(props.entityKey)
-    const data = entity.getData()
+    const data = entity.getData();
+    var replace = '';
+    if(data.replace)replace = data.replace;
     return (
-        <span style={styles[entity.getType()]} data-tooltip={entity.getType()}>
-        {props.children}
-        </span>
+                <span style={styles[entity.getType()]} className="tooltip">
+                {props.children}
+                    <span className="tooltip-data" style={styles[entity.getType()]}>
+                        <strong>{data.title}</strong><br/>
+                        {data.suggestion}<br/>
+                        <em>{replace}</em>
+                    </span>
+                </span>
+            
     );
+};
+
+const styles = {
+    'modal':{
+        backgroundColor:'#E3EBF4'
+    },
+    'adverb':{
+        backgroundColor:'#F7EFC0'
+    },
+    'weakverb':{
+        backgroundColor:'#F8E0D8'
+    },
+    'nominalization':{
+        backgroundColor:'#EEE5EB'
+    },
+    'tasteandsmell':{
+        backgroundColor:'rgb(219,239,182)'
+    },
+    'suggestions':{
+        backgroundColor:'#EFF2F5'
+    }
 };
 
 const decorator = new CompositeDecorator([
@@ -57,7 +71,15 @@ const decorator = new CompositeDecorator([
     {
         strategy: getEntityStrategy('nominalization'),
         component: TokenSpan,
-    }
+    },
+    {
+        strategy: getEntityStrategy('tasteandsmell'),
+        component: TokenSpan,
+    },
+    {
+        strategy: getEntityStrategy('suggestions'),
+        component: TokenSpan,
+    },
 ]);
 
 export default decorator

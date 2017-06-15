@@ -21707,6 +21707,7 @@
 	            var selectionStates = [];
 	            Object.keys(server).forEach(function (key) {
 	                var tokens = server[key];
+	                var title_ = tokens.title;
 	                tokens.instances.map(function (token) {
 	                    var blocks = _this2.getBlockKeys(token.start, token.end);
 	                    blocks.map(function (block) {
@@ -21718,9 +21719,12 @@
 	                            anchorOffset: start,
 	                            focusOffset: end
 	                        });
+	                        if (title_ == "Common Suggestions") console.log(block.key, start, end);
+	                        var data = token.data;
+	                        data.title = title_;
 	                        selectionStates.push({
 	                            entity: key,
-	                            data: token.data,
+	                            data: data,
 	                            selection: updatedSelection
 	                        });
 	                    });
@@ -21731,7 +21735,10 @@
 	            selectionStates.map(function (item) {
 	                var data = item.data;
 	                var entityKey = _draftJs.Entity.create(item.entity, 'MUTABLE', data);
+
+	                // Problem of entities not working seems to be here
 	                content = _draftJs.Modifier.applyEntity(content, item.selection, entityKey);
+	                if (item.data.title == "Common Suggestions") console.log(entityKey, (0, _draftJs.convertToRaw)(content));
 	            });
 	            this.setState({ editorState: _draftJs.EditorState.createWithContent(content, _decorator2.default) });
 	        }
@@ -50095,21 +50102,6 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var styles = {
-	    'modal': {
-	        backgroundColor: '#E3EBF4'
-	    },
-	    'adverb': {
-	        backgroundColor: '#F7EFC0'
-	    },
-	    'weakverb': {
-	        backgroundColor: '#F8E0D8'
-	    },
-	    'nominailization': {
-	        backgroundColor: '#EEE5EB'
-	    }
-	};
-
 	function getEntityStrategy(entityType) {
 	    return function (contentBlock, callback, contentState) {
 	        contentBlock.findEntityRanges(function (character) {
@@ -50125,11 +50117,51 @@
 	var TokenSpan = function TokenSpan(props) {
 	    var entity = _draftJs.Entity.get(props.entityKey);
 	    var data = entity.getData();
+	    var replace = '';
+	    if (data.replace) replace = data.replace;
 	    return _react2.default.createElement(
 	        'span',
-	        { style: styles[entity.getType()], 'data-tooltip': entity.getType() },
-	        props.children
+	        { style: styles[entity.getType()], className: 'tooltip' },
+	        props.children,
+	        _react2.default.createElement(
+	            'span',
+	            { className: 'tooltip-data', style: styles[entity.getType()] },
+	            _react2.default.createElement(
+	                'strong',
+	                null,
+	                data.title
+	            ),
+	            _react2.default.createElement('br', null),
+	            data.suggestion,
+	            _react2.default.createElement('br', null),
+	            _react2.default.createElement(
+	                'em',
+	                null,
+	                replace
+	            )
+	        )
 	    );
+	};
+
+	var styles = {
+	    'modal': {
+	        backgroundColor: '#E3EBF4'
+	    },
+	    'adverb': {
+	        backgroundColor: '#F7EFC0'
+	    },
+	    'weakverb': {
+	        backgroundColor: '#F8E0D8'
+	    },
+	    'nominalization': {
+	        backgroundColor: '#EEE5EB'
+	    },
+	    'tasteandsmell': {
+	        backgroundColor: 'rgb(219,239,182)'
+	    },
+	    'suggestions': {
+	        backgroundColor: '#EFF2F5'
+	    }
 	};
 
 	var decorator = new _draftJs.CompositeDecorator([{
@@ -50143,6 +50175,12 @@
 	    component: TokenSpan
 	}, {
 	    strategy: getEntityStrategy('nominalization'),
+	    component: TokenSpan
+	}, {
+	    strategy: getEntityStrategy('tasteandsmell'),
+	    component: TokenSpan
+	}, {
+	    strategy: getEntityStrategy('suggestions'),
 	    component: TokenSpan
 	}]);
 
@@ -50567,7 +50605,7 @@
 	      "end": 80,
 	      "data": {
 	        "remove": true,
-	        "suggestion": ""
+	        "suggestion": "Replace with more specific verb."
 	      },
 	      "start": 76
 	    }, {
@@ -50576,7 +50614,7 @@
 	      "end": 109,
 	      "data": {
 	        "remove": true,
-	        "suggestion": ""
+	        "suggestion": "Replace with more specific verb."
 	      },
 	      "start": 107
 	    }, {
@@ -50585,7 +50623,7 @@
 	      "end": 171,
 	      "data": {
 	        "remove": true,
-	        "suggestion": ""
+	        "suggestion": "Replace with more specific verb."
 	      },
 	      "start": 167
 	    }, {
@@ -50594,7 +50632,7 @@
 	      "end": 233,
 	      "data": {
 	        "remove": true,
-	        "suggestion": ""
+	        "suggestion": "Replace with more specific verb."
 	      },
 	      "start": 230
 	    }, {
@@ -50603,7 +50641,7 @@
 	      "end": 253,
 	      "data": {
 	        "remove": true,
-	        "suggestion": ""
+	        "suggestion": "Replace with more specific verb."
 	      },
 	      "start": 249
 	    }, {
@@ -50612,7 +50650,7 @@
 	      "end": 276,
 	      "data": {
 	        "remove": true,
-	        "suggestion": ""
+	        "suggestion": "Replace with more specific verb."
 	      },
 	      "start": 272
 	    }, {
@@ -50621,7 +50659,7 @@
 	      "end": 294,
 	      "data": {
 	        "remove": true,
-	        "suggestion": ""
+	        "suggestion": "Replace with more specific verb."
 	      },
 	      "start": 290
 	    }, {
@@ -50630,7 +50668,7 @@
 	      "end": 321,
 	      "data": {
 	        "remove": true,
-	        "suggestion": ""
+	        "suggestion": "Replace with more specific verb."
 	      },
 	      "start": 317
 	    }, {
@@ -50639,7 +50677,7 @@
 	      "end": 398,
 	      "data": {
 	        "remove": true,
-	        "suggestion": ""
+	        "suggestion": "Replace with more specific verb."
 	      },
 	      "start": 395
 	    }, {
@@ -50648,7 +50686,7 @@
 	      "end": 417,
 	      "data": {
 	        "remove": true,
-	        "suggestion": ""
+	        "suggestion": "Replace with more specific verb."
 	      },
 	      "start": 413
 	    }],
@@ -50860,7 +50898,7 @@
 	  "passive": {
 	    "instances": [{
 	      "start": 136,
-	      "token": "Also, everything you make will be criticized, or else ignored.  ",
+	      "token": "Also, everything you make will be criticized, or else ignored.",
 	      "end": 150,
 	      "data": {
 	        "remove": false,

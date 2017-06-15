@@ -342,7 +342,7 @@ const response = {
         "end": 80,
         "data": {
           "remove": true,
-          "suggestion": ""
+          "suggestion": "Replace with more specific verb."
         },
         "start": 76
       },
@@ -352,7 +352,7 @@ const response = {
         "end": 109,
         "data": {
           "remove": true,
-          "suggestion": ""
+          "suggestion": "Replace with more specific verb."
         },
         "start": 107
       },
@@ -362,7 +362,7 @@ const response = {
         "end": 171,
         "data": {
           "remove": true,
-          "suggestion": ""
+          "suggestion": "Replace with more specific verb."
         },
         "start": 167
       },
@@ -372,7 +372,7 @@ const response = {
         "end": 233,
         "data": {
           "remove": true,
-          "suggestion": ""
+          "suggestion": "Replace with more specific verb."
         },
         "start": 230
       },
@@ -382,7 +382,7 @@ const response = {
         "end": 253,
         "data": {
           "remove": true,
-          "suggestion": ""
+          "suggestion": "Replace with more specific verb."
         },
         "start": 249
       },
@@ -392,7 +392,7 @@ const response = {
         "end": 276,
         "data": {
           "remove": true,
-          "suggestion": ""
+          "suggestion": "Replace with more specific verb."
         },
         "start": 272
       },
@@ -402,7 +402,7 @@ const response = {
         "end": 294,
         "data": {
           "remove": true,
-          "suggestion": ""
+          "suggestion": "Replace with more specific verb."
         },
         "start": 290
       },
@@ -412,7 +412,7 @@ const response = {
         "end": 321,
         "data": {
           "remove": true,
-          "suggestion": ""
+          "suggestion": "Replace with more specific verb."
         },
         "start": 317
       },
@@ -422,7 +422,7 @@ const response = {
         "end": 398,
         "data": {
           "remove": true,
-          "suggestion": ""
+          "suggestion": "Replace with more specific verb."
         },
         "start": 395
       },
@@ -432,7 +432,7 @@ const response = {
         "end": 417,
         "data": {
           "remove": true,
-          "suggestion": ""
+          "suggestion": "Replace with more specific verb."
         },
         "start": 413
       }
@@ -667,7 +667,7 @@ const response = {
     "instances": [
       {
         "start": 136,
-        "token": "Also, everything you make will be criticized, or else ignored.  ",
+        "token": "Also, everything you make will be criticized, or else ignored.",
         "end": 150,
         "data": {
           "remove": false,
